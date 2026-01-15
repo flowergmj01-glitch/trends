@@ -1,0 +1,1077 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yahoo Trend Forecast 2026 Lesson</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@700&family=Nunito+Sans:wght@400;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-color: #f3e5f5;          /* 淺紫藤色 */
+            --card-bg: #ffffff;           /* 純白 */
+            --shadow: rgba(74, 20, 140, 0.15); /* 紫色陰影 */
+            --primary: #8e24aa;           /* 紫羅蘭色 (標題/按鈕) */
+            --secondary: #7b1fa2;         /* 深紫色 (強調) */
+            --text-main: #4a148c;         /* 深紫灰 (主要文字) */
+            --text-sub: #6a1b9a;          /* 次要文字 */
+            --accent: #d81b60;            /* 拼音/重點色 */
+        }
+
+        * {
+            box-sizing: border-box;
+            /* 移除全域 user-select: none 以允許複製文字 */
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            font-family: 'Nunito Sans', 'Noto Sans JP', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden; /* 防止捲動，專注於投影片 */
+            user-select: none; /* 防止選取到背景或 UI */
+        }
+
+        /* --- 投影片容器 --- */
+        #presentation-container {
+            width: 1280px;
+            height: 720px;
+            position: relative;
+            background-color: var(--card-bg);
+            box-shadow: 0 15px 30px var(--shadow);
+            border-radius: 12px;
+            overflow: hidden;
+            user-select: text; /* 允許選取投影片內容 */
+        }
+
+        .slide {
+            width: 100%;
+            height: 100%;
+            display: none; /* 預設隱藏 */
+            padding: 50px 60px;
+            position: relative;
+            z-index: 1;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .slide.active {
+            display: flex;
+        }
+
+        /* --- 畫布與內容層 --- */
+        .drawing-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 50; /* 在靜態內容之上 */
+            pointer-events: none; /* 預設不攔截滑鼠，由 JS 控制 */
+        }
+
+        .content-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 51; /* 在畫布之上，確保可互動 */
+            pointer-events: none;
+        }
+
+        /* 拖曳文字樣式 */
+        .draggable-text {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.8);
+            border: 1px dashed var(--primary);
+            padding: 5px 10px;
+            color: var(--text-main);
+            font-size: 24px;
+            font-weight: bold;
+            pointer-events: auto;
+            min-width: 50px;
+            cursor: move;
+            border-radius: 4px;
+            z-index: 100;
+        }
+
+        .draggable-text:focus {
+            outline: 2px solid var(--secondary);
+            border-style: solid;
+            cursor: text;
+        }
+
+        /* 拖曳圖片樣式 */
+        .draggable-image {
+            position: absolute;
+            width: 200px; /* 預設寬度 */
+            height: 200px;
+            resize: both; /* 允許縮放 */
+            overflow: hidden;
+            border: 2px dashed var(--primary);
+            cursor: move;
+            pointer-events: auto;
+            z-index: 99;
+            background-color: rgba(255,255,255,0.2);
+        }
+        
+        .draggable-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            pointer-events: none; /* 讓點擊穿透到 div 以便拖曳 */
+        }
+
+        .draggable-image:hover {
+            border-color: var(--accent);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        
+        /* 刪除按鈕 (針對圖片與文字) - 簡易實作：雙擊刪除 */
+
+        /* --- 排版樣式 --- */
+        h1, h2, h3 {
+            font-family: 'Noto Serif JP', serif;
+            color: var(--primary);
+            margin: 0;
+        }
+
+        h1 { font-size: 64px; margin-bottom: 20px; }
+        h2 { font-size: 42px; margin-bottom: 30px; border-bottom: 3px solid var(--secondary); padding-bottom: 10px; width: 100%; }
+        h3 { font-size: 28px; margin-bottom: 15px; color: var(--secondary); }
+
+        p, li {
+            color: var(--text-main);
+            font-size: 22px;
+            line-height: 1.8;
+            margin-bottom: 10px;
+        }
+
+        /* 拼音 Ruby */
+        ruby { ruby-position: over; }
+        rt { font-size: 0.6em; color: var(--accent); font-weight: normal; }
+        
+        /* 中文翻譯 */
+        .cn-trans {
+            color: var(--text-sub);
+            font-size: 18px;
+            display: block;
+            margin-top: -5px;
+            margin-bottom: 15px;
+            font-weight: normal;
+            opacity: 0.8;
+        }
+
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 50px;
+            width: 100%;
+            height: 100%;
+            align-items: center;
+        }
+
+        .image-wrapper {
+            border-radius: 12px;
+            height: 400px;
+            width: 100%;
+            overflow: hidden;
+            box-shadow: 0 8px 16px var(--shadow);
+            border: 2px solid #f3e5f5;
+        }
+        .image-wrapper img { width: 100%; height: 100%; object-fit: cover; }
+
+        .activity-box {
+            background-color: #f3e5f5; /* 淺紫藤背景 */
+            border-left: 6px solid var(--secondary);
+            padding: 20px;
+            border-radius: 0 8px 8px 0;
+            margin-top: 20px;
+            width: 100%;
+        }
+
+        .dialogue-bubble {
+            background: white;
+            padding: 15px;
+            border-radius: 15px;
+            margin-bottom: 10px;
+            border: 1px solid #e1bee7;
+            position: relative;
+            color: var(--text-main);
+        }
+        
+        .role-label {
+            font-size: 14px;
+            font-weight: bold;
+            color: var(--secondary);
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        .keyword-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            width: 100%;
+        }
+        .keyword-item {
+            background: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: 1px solid #e1bee7;
+            font-weight: bold;
+            color: var(--text-main);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        /* Full BG Overlay */
+        .full-bg { background-size: cover; background-position: center; position: relative; }
+        .overlay {
+            background-color: rgba(255,255,255,0.92);
+            padding: 60px;
+            border-radius: 10px;
+            text-align: center;
+            max-width: 900px;
+            box-shadow: 0 10px 20px rgba(74, 20, 140, 0.2);
+        }
+
+        /* --- 工具列 --- */
+        #toolbar {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: white;
+            padding: 10px 20px;
+            border-radius: 50px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            display: flex;
+            gap: 15px;
+            z-index: 1000;
+            align-items: center;
+            user-select: none;
+        }
+
+        .tool-btn {
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: var(--text-main);
+            cursor: pointer;
+            padding: 10px;
+            border-radius: 50%;
+            transition: 0.2s;
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .tool-btn:hover { background-color: #f3e5f5; }
+        .tool-btn.active { background-color: var(--primary); color: white; }
+
+        .divider { width: 1px; height: 30px; background: #ddd; }
+
+        /* 調色盤 */
+        #color-palette {
+            display: flex;
+            gap: 5px;
+        }
+        .color-swatch {
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid white;
+            box-shadow: 0 0 0 1px #ddd;
+        }
+        .color-swatch.active { transform: scale(1.2); box-shadow: 0 0 0 2px var(--primary); }
+
+        /* 導航按鈕 */
+        .nav-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255,255,255,0.8);
+            border: none;
+            color: var(--primary);
+            font-size: 30px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            user-select: none;
+        }
+        #prev-btn { left: 20px; }
+        #next-btn { right: 20px; }
+        .nav-btn:hover { background: var(--primary); color: white; }
+        .nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+        /* --- 列印設定 (PDF) --- */
+        @media print {
+            body {
+                background: none;
+                display: block;
+                height: auto;
+                overflow: visible;
+            }
+            #toolbar, .nav-btn { display: none !important; }
+            #presentation-container {
+                width: 100%;
+                height: auto;
+                box-shadow: none;
+                border: none;
+            }
+            .slide {
+                display: flex !important;
+                page-break-after: always;
+                height: 100vh;
+                border: 1px solid #ddd; /* 列印時加框線區隔 */
+            }
+            .slide-container {
+                page-break-inside: avoid;
+            }
+            /* 強制背景圖列印 */
+            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            @page { size: landscape; margin: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="presentation-container">
+        <!-- Navigation -->
+        <button id="prev-btn" class="nav-btn" onclick="changeSlide(-1)"><i class="fa-solid fa-chevron-left"></i></button>
+        <button id="next-btn" class="nav-btn" onclick="changeSlide(1)"><i class="fa-solid fa-chevron-right"></i></button>
+
+        <!-- Slides -->
+        
+        <!-- Slide 1: Title -->
+        <div class="slide active full-bg" style="background-image: url('https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=2070&auto=format&fit=crop');">
+            <div class="overlay">
+                <h1>Yahoo! <ruby>検索<rt>けんさく</rt></ruby><br>トレンド<ruby>予測<rt>よそく</rt></ruby> 2026</h1>
+                <h3 style="color: #4a148c;">期待される10のキーワード</h3>
+                <p style="font-size: 18px; margin-top: 20px;">レッスンの目標：会話練習と語彙</p>
+            </div>
+        </div>
+
+        <!-- Slide 2: Warm-up -->
+        <div class="slide">
+            <h2>ウォームアップ：<ruby>流行<rt>りゅうこう</rt></ruby>について</h2>
+            <div class="two-column">
+                <div>
+                    <h3><i class="fa-solid fa-comments"></i> 先生と話しましょう</h3>
+                    <ul>
+                        <li>2025年に、何か<ruby>流行<rt>はや</rt></ruby>ったものを<ruby>買<rt>か</rt></ruby>いましたか？<br>
+                        <span class="cn-trans">2025年你買過什麼流行的東西嗎？</span></li>
+                        
+                        <li>新しいトレンドは、どこで<ruby>知<rt>し</rt></ruby>りますか？（SNS、テレビ、<ruby>友達<rt>ともだち</rt></ruby>？）<br>
+                        <span class="cn-trans">你通常從哪裡得知新趨勢？（SNS、電視、朋友？）</span></li>
+                    </ul>
+                    <div class="activity-box">
+                        <div class="activity-title">フレーズ練習</div>
+                        <p>「私は〜でトレンドをチェックします。」<br>
+                        <span class="cn-trans">我會在〜檢查流行趨勢。</span></p>
+                    </div>
+                </div>
+                <div class="image-wrapper">
+                    <img src="https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?q=80&w=1000&auto=format&fit=crop" alt="Smartphone Trends">
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 3: Overview -->
+        <div class="slide">
+            <h2>2026年 注目キーワード BEST 10</h2>
+            <p>LINEヤフーが<ruby>発表<rt>はっぴょう</rt></ruby>した、2026年にヒットが<ruby>期待<rt>きたい</rt></ruby>される10個のキーワードです。</p>
+            <div class="keyword-grid">
+                <div class="keyword-item">1. <ruby>大人<rt>おとな</rt></ruby>のシール</div>
+                <div class="keyword-item">2. コグマパン</div>
+                <div class="keyword-item">3. ちきゅうのにわ</div>
+                <div class="keyword-item">4. ハイロックス (HYROX)</div>
+                <div class="keyword-item">5. mojojojo</div>
+                <div class="keyword-item">6. ラーティアオ</div>
+                <div class="keyword-item">7. <ruby>近沢<rt>ちかざわ</rt></ruby>レース<ruby>店<rt>てん</rt></ruby></div>
+                <div class="keyword-item">8. アフューム (arFUM)</div>
+                <div class="keyword-item">9. ブラインドボックス</div>
+                <div class="keyword-item">10. ヨアジョン</div>
+            </div>
+        </div>
+
+        <!-- Slide 4: Item 1 - Adult Stickers -->
+        <div class="slide">
+            <h2>1. <ruby>大人<rt>おとな</rt></ruby>のシール</h2>
+            <div class="two-column">
+                <div class="image-wrapper">
+                    <img src="https://images.unsplash.com/photo-1572375992501-4b0892d50c69?q=80&w=1000&auto=format&fit=crop" alt="Cute Stickers">
+                </div>
+                <div>
+                    <p><ruby>立体<rt>りったい</rt></ruby><ruby>的<rt>てき</rt></ruby>な「ボンボンドロップシール」が<ruby>火<rt>ひ</rt></ruby><ruby>付<rt>づ</rt></ruby>け<ruby>役<rt>やく</rt></ruby>。</p>
+                    <span class="cn-trans">立體的「糖果水滴貼紙」是引爆點。</span>
+                    <p>2026年は「大人が<ruby>楽<rt>たの</rt></ruby>しむシール」へ<ruby>進化<rt>しんか</rt></ruby>します。</p>
+                    <span class="cn-trans">2026年將進化為「大人也能享受的貼紙」。</span>
+                    <div class="activity-box">
+                        <div class="activity-title">単語</div>
+                        <ul>
+                            <li><ruby>火<rt>ひ</rt></ruby><ruby>付<rt>づ</rt></ruby>け<ruby>役<rt>やく</rt></ruby> (きっかけ)</li>
+                            <li><ruby>進化<rt>しんか</rt></ruby> (レベルアップ)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5: Activity 1 - Stickers -->
+        <div class="slide">
+            <h2><i class="fa-solid fa-user-graduate"></i> アクティビティ：ロールプレイ</h2>
+            <p>あなたは<ruby>文房具<rt>ぶんぼうぐ</rt></ruby><ruby>屋<rt>や</rt></ruby>の<ruby>店員<rt>てんいん</rt></ruby>です。お客さん（先生）にシールをおすすめしてください。</p>
+            <span class="cn-trans">你是文具店店員。請向客人（老師）推薦貼紙。</span>
+            
+            <div class="activity-box" style="height: auto;">
+                <div class="dialogue-bubble">
+                    <span class="role-label">お客様（先生）</span>
+                    「すみません、手帳に<ruby>貼<rt>は</rt></ruby>る、おしゃれなシールを探しているんですが...」
+                </div>
+                <div class="dialogue-bubble" style="border: 2px solid var(--secondary);">
+                    <span class="role-label">店員（学生）</span>
+                    「はい、こちらはいかがですか？ 今、〜が人気ですよ。」<br>
+                    <span style="font-size: 16px; color: #666;">（例：立体的な / キラキラ / 大人っぽい）</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 6: Item 2 - Goguma Pan -->
+        <div class="slide">
+            <h2>2. コグマパン</h2>
+            <div class="two-column">
+                <div>
+                    <p>「コグマ」は<ruby>韓国<rt>かんこく</rt></ruby><ruby>語<rt>ご</rt></ruby>で「サツマイモ」です。</p>
+                    <span class="cn-trans">「Goguma」是韓語的「地瓜」。</span>
+                    <p><ruby>本物<rt>ほんもの</rt></ruby>そっくりの<ruby>見<rt>み</rt></ruby>た目がSNS<ruby>映<rt>ば</rt></ruby>えすると<ruby>話題<rt>わだい</rt></ruby>です。</p>
+                    <span class="cn-trans">外觀跟真的地瓜一模一樣，在社群媒體上很吸睛。</span>
+                    <p><ruby>生地<rt>きじ</rt></ruby>にサツマイモを<ruby>練<rt>ね</rt></ruby>り<ruby>込<rt>こ</rt></ruby>んでいます。</p>
+                    <span class="cn-trans">麵團裡揉進了地瓜。</span>
+                </div>
+                <div class="image-wrapper">
+                    <img src="https://images.unsplash.com/photo-1618641986557-1ecd23095910?q=80&w=1000&auto=format&fit=crop" alt="Sweet Potato Bread">
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 7: Activity 2 - Describing Food -->
+        <div class="slide">
+            <h2><i class="fa-solid fa-utensils"></i> アクティビティ：<ruby>食<rt>しょく</rt></ruby>レポ</h2>
+            <p>コグマパンを食べた<ruby>感想<rt>かんそう</rt></ruby>を言ってみましょう。</p>
+            <span class="cn-trans">試著說說吃完地瓜麵包的感想。</span>
+
+            <div class="two-column">
+                <div class="activity-box">
+                    <div class="activity-title">使える形容詞</div>
+                    <ul>
+                        <li>モチモチしている</li>
+                        <li><ruby>濃厚<rt>のうこう</rt></ruby>な</li>
+                        <li><ruby>甘<rt>あま</rt></ruby>い</li>
+                        <li><ruby>本物<rt>ほんもの</rt></ruby>みたい</li>
+                    </ul>
+                </div>
+                <div>
+                    <div class="dialogue-bubble" style="border: 2px solid var(--secondary);">
+                        <span class="role-label">学生</span>
+                        「このパンは食感が_____で、味がとても_____です！」
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 8: Item 3 - Chikyu no Niwa -->
+        <div class="slide">
+            <h2>3. ちきゅうのにわ</h2>
+            <div class="two-column">
+                <div class="image-wrapper">
+                    <img src="https://images.unsplash.com/photo-1545558014-8692077e9b5c?q=80&w=1000&auto=format&fit=crop" alt="Kids Indoor Playground">
+                </div>
+                <div>
+                    <p><ruby>屋内<rt>おくない</rt></ruby><ruby>型<rt>がた</rt></ruby>のプレイグラウンドです。</p>
+                    <span class="cn-trans">室內型的遊樂場。</span>
+                    <p>0歳から12歳までが<ruby>対象<rt>たいしょう</rt></ruby>です。</p>
+                    <span class="cn-trans">對象是0歲到12歲的兒童。</span>
+                    <p>「空」「火山」「氷山」などのエリアで<ruby>遊<rt>あそ</rt></ruby>べます。</p>
+                    <span class="cn-trans">可以在「天空」、「火山」、「冰山」等區域遊玩。</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 9: Item 4 - HYROX -->
+        <div class="slide">
+            <h2>4. ハイロックス (HYROX)</h2>
+            <div class="two-column">
+                <div>
+                    <p>「走るフィットネスレース」です。</p>
+                    <span class="cn-trans">「奔跑的健身競賽」。</span>
+                    <p>1kmのランニングと、8種類のワークアウトを<ruby>交互<rt>こうご</rt></ruby>に行います。</p>
+                    <span class="cn-trans">交替進行1公里的跑步與8種健身項目。</span>
+                    <p><ruby>限界<rt>げんかい</rt></ruby>に<ruby>挑<rt>いど</rt></ruby>む<ruby>競技<rt>きょうぎ</rt></ruby>として人気です。</p>
+                    <span class="cn-trans">作為挑戰極限的競技而受歡迎。</span>
+                </div>
+                <div class="image-wrapper">
+                    <img src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=1000&auto=format&fit=crop" alt="Gym Workout Crossfit">
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 10: Activity 3 - Comparison -->
+        <div class="slide">
+            <h2><i class="fa-solid fa-scale-balanced"></i> アクティビティ：どっち派？</h2>
+            <p>「ちきゅうのにわ（子供の遊び場）」vs「ハイロックス（ハードな運動）」</p>
+            
+            <div class="activity-box">
+                <div class="dialogue-bubble">
+                    <span class="role-label">先生</span>
+                    「週末に行くなら、のんびり遊ぶのと、激しい運動、どっちがいいですか？」
+                </div>
+                <div class="dialogue-bubble" style="border: 2px solid var(--secondary);">
+                    <span class="role-label">学生</span>
+                    「私は_____の方がいいです。なぜなら_____だからです。」<br>
+                    <span style="font-size: 16px; color: #666;">（理由：リラックスしたい / ストレスを発散したい）</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 11: Item 5 - mojojojo -->
+        <div class="slide">
+            <h2>5. mojojojo</h2>
+            <div class="two-column">
+                <div class="image-wrapper">
+                    <img src="https://images.unsplash.com/photo-1559454403-b8fb87521bc7?q=80&w=1000&auto=format&fit=crop" alt="Handmade Cute Plush Toy">
+                </div>
+                <div>
+                    <p><ruby>手縫<rt>てぬ</rt></ruby>いのぬいぐるみブランドです。</p>
+                    <span class="cn-trans">手縫的布偶品牌。</span>
+                    <p>「のほほん」とした<ruby>表情<rt>ひょうじょう</rt></ruby>が<ruby>魅力<rt>みりょく</rt></ruby>です。</p>
+                    <span class="cn-trans">呆萌悠哉的表情是其魅力所在。</span>
+                    <p>カプセルトイ（ガチャガチャ）でも人気があります。</p>
+                    <span class="cn-trans">在扭蛋玩具中也很受歡迎。</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 12: Item 6 - Latiao -->
+        <div class="slide">
+            <h2>6. ラーティアオ</h2>
+            <div class="two-column">
+                <div>
+                    <p><ruby>中国<rt>ちゅうごく</rt></ruby>で人気のスパイシーなお<ruby>菓子<rt>かし</rt></ruby>です。</p>
+                    <span class="cn-trans">中國受歡迎的辛辣零食。</span>
+                    <p><ruby>唐辛子<rt>とうがらし</rt></ruby>や<ruby>花椒<rt>ホアジャオ</rt></ruby>で<ruby>味付<rt>あじつ</rt></ruby>けされています。</p>
+                    <span class="cn-trans">用辣椒和花椒調味。</span>
+                    <p>「もちっ」とした食感が<ruby>若者<rt>わかもの</rt></ruby>にブームです。</p>
+                    <span class="cn-trans">「軟糯Q彈」的口感在年輕人中掀起熱潮。</span>
+                </div>
+                <div class="image-wrapper">
+                    <img src="https://images.unsplash.com/photo-1626075193635-f09dfd261316?q=80&w=1000&auto=format&fit=crop" alt="Spicy Stick Snacks">
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 13: Activity 4 - Taste Preferences -->
+        <div class="slide">
+            <h2><i class="fa-solid fa-pepper-hot"></i> アクティビティ：好みの味</h2>
+            <p>「mojojojo（癒し）」と「ラーティアオ（刺激）」</p>
+            
+            <div class="two-column">
+                <div class="activity-box">
+                    <div class="activity-title">質問</div>
+                    <ol>
+                        <li>辛いものは得意ですか？<br><span class="cn-trans">你擅長吃辣嗎？</span></li>
+                        <li>可愛いキャラクターグッズを集めますか？<br><span class="cn-trans">你會收集可愛的角色周邊嗎？</span></li>
+                    </ol>
+                </div>
+                <div class="activity-box">
+                    <div class="activity-title">フレーズ</div>
+                    <p>「辛いのは苦手です。」</p>
+                    <p>「見るだけで癒されます。」</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 14: Item 7 - Chikazawa Lace -->
+        <div class="slide">
+            <h2>7. <ruby>近沢<rt>ちかざわ</rt></ruby>レース<ruby>店<rt>てん</rt></ruby></h2>
+            <div class="two-column">
+                <div class="image-wrapper">
+                    <img src="https://images.unsplash.com/photo-1627916942738-16e72c83c072?q=80&w=1000&auto=format&fit=crop" alt="Lace Handkerchief">
+                </div>
+                <div>
+                    <p><ruby>横浜<rt>よこはま</rt></ruby>・<ruby>元町<rt>もとまち</rt></ruby>の<ruby>老舗<rt>しにせ</rt></ruby>レース<ruby>専門<rt>せんもん</rt></ruby><ruby>店<rt>てん</rt></ruby>です。</p>
+                    <span class="cn-trans">橫濱元町的老字號蕾絲專賣店。</span>
+                    <p><ruby>繊細<rt>せんさい</rt></ruby>なレースのハンカチが<ruby>贈<rt>おく</rt></ruby>り<ruby>物<rt>もの</rt></ruby>として人気です。</p>
+                    <span class="cn-trans">精緻的蕾絲手帕作為禮物很受歡迎。</span>
+                    <p>ユニークなデザインが話題になります。</p>
+                    <span class="cn-trans">獨特的設計經常成為話題。</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 15: Item 8 - arFUM -->
+        <div class="slide">
+            <h2>8. アフューム</h2>
+            <div class="two-column">
+                <div>
+                    <p><ruby>韓国<rt>かんこく</rt></ruby>のランドリー（洗濯）ブランド。</p>
+                    <span class="cn-trans">韓國的洗衣品牌。</span>
+                    <p>ジェルボール<ruby>型<rt>がた</rt></ruby>の<ruby>洗剤<rt>せんざい</rt></ruby>です。</p>
+                    <span class="cn-trans">膠囊型的洗衣球。</span>
+                    <p><ruby>香水<rt>こうすい</rt></ruby>のような<ruby>華<rt>はな</rt></ruby>やかな<ruby>香<rt>かお</rt></ruby>りが<ruby>特徴<rt>とくちょう</rt></ruby>です。</p>
+                    <span class="cn-trans">特徵是像香水一樣華麗的香氣。</span>
+                    <p>SNSで「<ruby>映<rt>は</rt></ruby>える洗剤」と言われています。</p>
+                    <span class="cn-trans">在SNS上被稱為「好拍又好看的洗衣精」。</span>
+                </div>
+                <div class="image-wrapper">
+                    <img src="https://images.unsplash.com/photo-1611095966422-50a79dd5313b?q=80&w=1000&auto=format&fit=crop" alt="Laundry Beads Colorful">
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 16: Activity 5 - Gifting -->
+        <div class="slide">
+            <h2><i class="fa-solid fa-gift"></i> アクティビティ：プレゼント</h2>
+            <p>友達の<ruby>誕生日<rt>たんじょうび</rt></ruby>です。どちらをあげますか？</p>
+            <span class="cn-trans">朋友生日到了。你會送哪一個？</span>
+
+            <div class="two-column">
+                <div class="activity-box">
+                    <h3>A. 近沢レース</h3>
+                    <p>上品で、長く使える。</p>
+                </div>
+                <div class="activity-box">
+                    <h3>B. アフューム</h3>
+                    <p>実用的で、香りがいい。</p>
+                </div>
+            </div>
+            <div class="dialogue-bubble" style="margin-top:20px; border: 2px solid var(--secondary); width: 100%;">
+                <span class="role-label">学生</span>
+                「私は_____をあげたいです。友達は_____が好きだからです。」
+            </div>
+        </div>
+
+        <!-- Slide 17: Item 9 - Blind Box -->
+        <div class="slide">
+            <h2>9. ブラインドボックス</h2>
+            <div class="two-column">
+                <div class="image-wrapper">
+                    <img src="https://images.unsplash.com/photo-1532185202685-6b5c3290dd7e?q=80&w=1000&auto=format&fit=crop" alt="Surprise Boxes">
+                </div>
+                <div>
+                    <p><ruby>中身<rt>なかみ</rt></ruby>がわからない箱で<ruby>販売<rt>はんばい</rt></ruby>する方式です。</p>
+                    <span class="cn-trans">以不知道內容物的盒子進行販售的方式。</span>
+                    <p>「どれが<ruby>当<rt>あ</rt></ruby>たるかわからない」ワクワク<ruby>感<rt>かん</rt></ruby>が<ruby>魅力<rt>みりょく</rt></ruby>です。</p>
+                    <span class="cn-trans">「不知道會抽中哪個」的興奮感是其魅力。</span>
+                    <p>シークレット（レア）もあります。</p>
+                    <span class="cn-trans">也有隱藏版（稀有款）。</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 18: Item 10 - YOAJUNG -->
+        <div class="slide">
+            <h2>10. ヨアジョン</h2>
+            <div class="two-column">
+                <div>
+                    <p><ruby>韓国<rt>かんこく</rt></ruby><ruby>発<rt>はつ</rt></ruby>のフローズンヨーグルト<ruby>専門店<rt>せんもんてん</rt></ruby>。</p>
+                    <span class="cn-trans">源自韓國的優格冰淇淋專賣店。</span>
+                    <p><ruby>自家製<rt>じかせい</rt></ruby>ヨーグルトアイスに、フルーツやナッツをトッピングします。</p>
+                    <span class="cn-trans">在自製優格冰淇淋上添加水果或堅果。</span>
+                    <p><ruby>日本<rt>にほん</rt></ruby>でも、大阪や東京にオープンしました。</p>
+                    <span class="cn-trans">在日本的大阪和東京也開店了。</span>
+                </div>
+                <div class="image-wrapper">
+                    <img src="https://images.unsplash.com/photo-1488477181946-6428a0291777?q=80&w=1000&auto=format&fit=crop" alt="Frozen Yogurt with toppings">
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 19: Activity 6 - Ranking -->
+        <div class="slide">
+            <h2><i class="fa-solid fa-ranking-star"></i> アクティビティ：私のベストワン</h2>
+            <p>今日紹介した10個の中で、一番<ruby>興味<rt>きょうみ</rt></ruby>があるのはどれですか？</p>
+            <span class="cn-trans">今天介紹的10個項目中，你最感興趣的是哪一個？</span>
+
+            <div class="keyword-grid" style="font-size: 16px;">
+                <div class="keyword-item">大人シール</div>
+                <div class="keyword-item">コグマパン</div>
+                <div class="keyword-item">ちきゅうのにわ</div>
+                <div class="keyword-item">HYROX</div>
+                <div class="keyword-item">mojojojo</div>
+                <div class="keyword-item">ラーティアオ</div>
+                <div class="keyword-item">近沢レース</div>
+                <div class="keyword-item">アフューム</div>
+                <div class="keyword-item">ブラインドボックス</div>
+                <div class="keyword-item">ヨアジョン</div>
+            </div>
+
+            <div class="dialogue-bubble" style="margin-top: 20px; border: 2px solid var(--secondary); width: 100%;">
+                <span class="role-label">学生</span>
+                「私が一番気になるのは _____ です。なぜなら _____ してみたいからです。」<br>
+                <span style="font-size: 16px; color: #666;">（理由：食べてみたい / 行ってみたい / 買ってみたい）</span>
+            </div>
+        </div>
+
+        <!-- Slide 20: Homework -->
+        <div class="slide full-bg" style="background-image: url('https://images.unsplash.com/photo-1455390582262-044cdead277a?q=80&w=2073&auto=format&fit=crop');">
+            <div class="overlay">
+                <h1>レッスン終了</h1>
+                <p>お<ruby>疲<rt>つか</rt></ruby>れ<ruby>様<rt>さま</rt></ruby>でした。</p>
+                
+                <div class="activity-box" style="margin-top: 30px; text-align: left;">
+                    <div class="activity-title">宿題</div>
+                    <ul>
+                        <li>今日選んだ「ベストワン」について、ネットでもっと調べてください。<br>
+                        <span class="cn-trans">請上網搜尋更多關於今天選出的「第一名」的資訊。</span></li>
+                        <li>次回のレッスンで、新しい情報を教えてください。<br>
+                        <span class="cn-trans">在下次上課時，請告訴我新的資訊。</span></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Canvas Layers (Created Dynamically by JS) -->
+    </div>
+
+    <!-- Hidden Input for Image Upload -->
+    <input type="file" id="image-upload" accept="image/*" style="display: none;" onchange="handleImageUpload(this)">
+
+    <!-- Toolbar -->
+    <div id="toolbar">
+        <button class="tool-btn active" id="btn-move" onclick="setMode('move')" title="移動工具 (Move)"><i class="fa-solid fa-up-down-left-right"></i></button>
+        <button class="tool-btn" id="btn-pen" onclick="setMode('pen')" title="畫筆 (Pen)"><i class="fa-solid fa-pen"></i></button>
+        <button class="tool-btn" id="btn-eraser" onclick="setMode('eraser')" title="橡皮擦 (Eraser)"><i class="fa-solid fa-eraser"></i></button>
+        <button class="tool-btn" id="btn-text" onclick="setMode('text')" title="文字工具 (Text)"><i class="fa-solid fa-font"></i></button>
+        <!-- Image Upload Button -->
+        <button class="tool-btn" id="btn-image" onclick="triggerImageUpload()" title="新增圖片 (Add Image)"><i class="fa-solid fa-image"></i></button>
+        
+        <div class="divider"></div>
+        
+        <div id="color-palette">
+            <!-- Colors generated by JS -->
+        </div>
+
+        <div class="divider"></div>
+
+        <button class="tool-btn" onclick="exportPDF()" title="另存 PDF (Save PDF)"><i class="fa-solid fa-file-pdf"></i></button>
+    </div>
+
+    <script>
+        // --- 設定與初始化 ---
+        const colors = [
+            '#8e24aa', // Primary Purple
+            '#d81b60', // Accent Pink
+            '#e53935', // Red
+            '#fb8c00', // Orange
+            '#fdd835', // Yellow
+            '#43a047', // Green
+            '#1e88e5', // Blue
+            '#3949ab', // Indigo
+            '#546e7a', // Blue Grey
+            '#000000'  // Black
+        ];
+
+        let currentMode = 'move'; // move, pen, eraser, text
+        let currentColor = colors[0];
+        let isDrawing = false;
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const presentationContainer = document.getElementById('presentation-container');
+
+        // --- 初始化頁面 ---
+        function init() {
+            // 生成調色盤
+            const palette = document.getElementById('color-palette');
+            colors.forEach((color, index) => {
+                const swatch = document.createElement('div');
+                swatch.className = `color-swatch ${index === 0 ? 'active' : ''}`;
+                swatch.style.backgroundColor = color;
+                swatch.onclick = () => selectColor(color, swatch);
+                palette.appendChild(swatch);
+            });
+
+            // 為每一頁新增 Canvas 和 Content Layer
+            slides.forEach((slide, index) => {
+                // Canvas Layer
+                const canvas = document.createElement('canvas');
+                canvas.className = 'drawing-canvas';
+                canvas.width = 1280;
+                canvas.height = 720;
+                slide.appendChild(canvas);
+                
+                // Content Layer (For Text & Images)
+                const contentLayer = document.createElement('div');
+                contentLayer.className = 'content-layer';
+                slide.appendChild(contentLayer);
+
+                // 設定 Canvas 事件
+                setupCanvasEvents(canvas);
+
+                // 設定 Content Layer 點擊 (新增文字)
+                // 注意：在 Move 模式下，contentLayer pointer-events 為 none 以允許點擊底下文字
+                // 在 Text 模式下，我們需要偵測點擊來新增文字
+                // 這裡我們把監聽器加在 slide 上，並過濾目標
+                slide.addEventListener('mousedown', (e) => handleSlideClick(e, contentLayer));
+            });
+
+            updateNavButtons();
+            setMode('move'); // Initialize mode
+        }
+
+        // --- 工具切換 ---
+        function setMode(mode) {
+            currentMode = mode;
+            
+            // 更新按鈕樣式
+            document.querySelectorAll('.tool-btn').forEach(btn => btn.classList.remove('active'));
+            const btn = document.getElementById(`btn-${mode}`);
+            if (btn) btn.classList.add('active');
+
+            // 處理游標與 Pointer Events
+            const canvases = document.querySelectorAll('.drawing-canvas');
+            const contentLayers = document.querySelectorAll('.content-layer');
+            const draggables = document.querySelectorAll('.draggable-text, .draggable-image');
+
+            if (mode === 'pen' || mode === 'eraser') {
+                canvases.forEach(c => c.style.pointerEvents = 'auto');
+                contentLayers.forEach(l => l.style.pointerEvents = 'none');
+                draggables.forEach(d => {
+                    if (d.classList.contains('draggable-text')) d.contentEditable = "false";
+                    d.style.pointerEvents = 'none'; // 繪圖時不干擾
+                });
+                document.body.style.cursor = 'crosshair';
+                presentationContainer.style.userSelect = 'none'; // 繪圖時禁止選取文字
+            } else if (mode === 'text') {
+                canvases.forEach(c => c.style.pointerEvents = 'none');
+                contentLayers.forEach(l => l.style.pointerEvents = 'none'); 
+                draggables.forEach(d => d.style.pointerEvents = 'auto');
+                document.body.style.cursor = 'text';
+                presentationContainer.style.userSelect = 'none'; // 新增文字時避免選取到底下文字
+            } else if (mode === 'move') {
+                canvases.forEach(c => c.style.pointerEvents = 'none');
+                contentLayers.forEach(l => l.style.pointerEvents = 'none');
+                draggables.forEach(d => {
+                    d.style.cursor = 'move';
+                    if (d.classList.contains('draggable-text')) d.contentEditable = "false";
+                    d.style.pointerEvents = 'auto';
+                });
+                document.body.style.cursor = 'default';
+                presentationContainer.style.userSelect = 'text'; // 移動模式下允許選取底下文字
+            }
+        }
+
+        function selectColor(color, swatch) {
+            currentColor = color;
+            document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
+            swatch.classList.add('active');
+            
+            // 如果在文字模式或移動模式，選顏色可以改變當前選中的文字顏色
+            if (document.activeElement && document.activeElement.classList.contains('draggable-text')) {
+                document.activeElement.style.color = color;
+                document.activeElement.style.borderColor = color;
+            }
+        }
+
+        // --- 繪圖功能 ---
+        function setupCanvasEvents(canvas) {
+            const ctx = canvas.getContext('2d');
+            
+            canvas.addEventListener('mousedown', (e) => {
+                if (currentMode !== 'pen' && currentMode !== 'eraser') return;
+                isDrawing = true;
+                ctx.beginPath();
+                const rect = canvas.getBoundingClientRect();
+                ctx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
+            });
+
+            canvas.addEventListener('mousemove', (e) => {
+                if (!isDrawing) return;
+                const rect = canvas.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+
+                ctx.lineWidth = currentMode === 'eraser' ? 20 : 3;
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
+                
+                if (currentMode === 'eraser') {
+                    ctx.globalCompositeOperation = 'destination-out';
+                } else {
+                    ctx.globalCompositeOperation = 'source-over';
+                    ctx.strokeStyle = currentColor;
+                }
+
+                ctx.lineTo(x, y);
+                ctx.stroke();
+            });
+
+            canvas.addEventListener('mouseup', () => isDrawing = false);
+            canvas.addEventListener('mouseout', () => isDrawing = false);
+        }
+
+        // --- 文字功能 ---
+        function handleSlideClick(e, contentLayer) {
+            if (currentMode !== 'text') return;
+            
+            // 避免點到現有的文字框或圖片
+            if (e.target.classList.contains('draggable-text') || e.target.closest('.draggable-image')) return;
+
+            const rect = contentLayer.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+
+            createDraggableText(x, y, contentLayer);
+        }
+
+        function createDraggableText(x, y, container) {
+            const div = document.createElement('div');
+            div.className = 'draggable-text';
+            div.contentEditable = "true";
+            div.innerHTML = "Text";
+            div.style.left = `${x}px`;
+            div.style.top = `${y}px`;
+            div.style.color = currentColor;
+            div.style.borderColor = currentColor;
+            
+            setupDraggable(div);
+            
+            // 雙擊刪除
+            div.addEventListener('dblclick', () => {
+                if(currentMode === 'eraser' || currentMode === 'move') div.remove();
+            });
+
+            container.appendChild(div);
+            
+            // 自動 focus 並全選
+            setTimeout(() => {
+                div.focus();
+                document.execCommand('selectAll', false, null);
+            }, 0);
+        }
+
+        // --- 圖片上傳功能 ---
+        function triggerImageUpload() {
+            document.getElementById('image-upload').click();
+        }
+
+        function handleImageUpload(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const currentContentLayer = slides[currentSlide].querySelector('.content-layer');
+                    createDraggableImage(e.target.result, 100, 100, currentContentLayer);
+                };
+                reader.readAsDataURL(input.files[0]);
+                input.value = ''; // Reset input so same file can be selected again
+            }
+        }
+
+        function createDraggableImage(src, x, y, container) {
+            const div = document.createElement('div');
+            div.className = 'draggable-image';
+            div.style.left = `${x}px`;
+            div.style.top = `${y}px`;
+            
+            const img = document.createElement('img');
+            img.src = src;
+            div.appendChild(img);
+
+            setupDraggable(div);
+
+            // 雙擊刪除
+            div.addEventListener('dblclick', () => {
+                if(currentMode === 'eraser' || currentMode === 'move') div.remove();
+            });
+
+            container.appendChild(div);
+        }
+
+        // --- 通用拖曳邏輯 ---
+        function setupDraggable(element) {
+            let isDragging = false;
+            let startX, startY, initialLeft, initialTop;
+
+            element.addEventListener('mousedown', (e) => {
+                if (currentMode === 'move') {
+                    // 如果點擊的是 resize handle (圖片右下角)，不觸發拖曳
+                    // 這裡透過判斷點擊位置是否靠近邊緣來簡單處理，或者 CSS resize 自動處理
+                    // 由於 div 使用 overflow:hidden 和 resize:both, 瀏覽器原生的 resize handle 會吃掉事件
+                    // 我們只需要處理非 resize區域的點擊
+                    const rect = element.getBoundingClientRect();
+                    const isResizing = (e.clientX > rect.right - 20 && e.clientY > rect.bottom - 20);
+
+                    if (element.classList.contains('draggable-image') && isResizing) {
+                        return; // Let native CSS resize handle it
+                    }
+
+                    isDragging = true;
+                    startX = e.clientX;
+                    startY = e.clientY;
+                    initialLeft = element.offsetLeft;
+                    initialTop = element.offsetTop;
+                    element.style.cursor = 'grabbing';
+                    e.stopPropagation(); 
+                } else if (currentMode === 'text' && element.classList.contains('draggable-text')) {
+                     element.contentEditable = "true";
+                     element.focus();
+                }
+            });
+
+            window.addEventListener('mousemove', (e) => {
+                if (!isDragging) return;
+                e.preventDefault(); // 防止選取文字
+                const dx = e.clientX - startX;
+                const dy = e.clientY - startY;
+                element.style.left = `${initialLeft + dx}px`;
+                element.style.top = `${initialTop + dy}px`;
+            });
+
+            window.addEventListener('mouseup', () => {
+                isDragging = false;
+                if (currentMode === 'move') element.style.cursor = 'move';
+            });
+        }
+
+        // --- 投影片導航 ---
+        function changeSlide(direction) {
+            slides[currentSlide].classList.remove('active');
+            currentSlide += direction;
+            if (currentSlide < 0) currentSlide = 0;
+            if (currentSlide >= slides.length) currentSlide = slides.length - 1;
+            slides[currentSlide].classList.add('active');
+            updateNavButtons();
+        }
+
+        function updateNavButtons() {
+            document.getElementById('prev-btn').disabled = currentSlide === 0;
+            document.getElementById('next-btn').disabled = currentSlide === slides.length - 1;
+        }
+
+        // --- PDF 輸出 ---
+        function exportPDF() {
+            window.print();
+        }
+
+        // 啟動
+        init();
+
+    </script>
+</body>
+</html>
